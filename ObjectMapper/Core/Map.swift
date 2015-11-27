@@ -30,7 +30,7 @@
 import Foundation
 
 /// A class used for holding mapping data
-public final class Map {
+public struct Map {
 	public let mappingType: MappingType
 	
 	var JSONDictionary: [String : AnyObject] = [:]
@@ -41,9 +41,12 @@ public final class Map {
 	/// Counter for failing cases of deserializing values to `let` properties.
 	private var failedCount: Int = 0
 	
-	public init(mappingType: MappingType, JSONDictionary: [String : AnyObject]) {
+	public init(mappingType: MappingType, JSONDictionary: [String : AnyObject], currentKey: String? = nil, keyIsNested: Bool = false, currentValue: AnyObject? = nil) {
 		self.mappingType = mappingType
 		self.JSONDictionary = JSONDictionary
+		self.currentValue = currentValue
+		self.currentKey = currentKey
+		self.keyIsNested = keyIsNested
 	}
 	
 	/// Sets the current mapper value and key.
@@ -55,8 +58,7 @@ public final class Map {
 	
 	public subscript(key: String, nested nested: Bool) -> Map {
 		// save key and value associated to it
-		currentKey = key
-		keyIsNested = nested
+		var currentValue: AnyObject?
 		
 		// check if a value exists for the current key
 		if nested == false {
@@ -65,8 +67,8 @@ public final class Map {
 			// break down the components of the key that are separated by .
 			currentValue = valueFor(ArraySlice(key.componentsSeparatedByString(".")), dictionary: JSONDictionary)
 		}
-		
-		return self
+		let jsonDictionary = currentValue as? [String : AnyObject] ?? [:]
+		return Map(mappingType: mappingType, JSONDictionary: jsonDictionary, currentKey: key, keyIsNested: nested, currentValue: currentValue)
 	}
 	
 	// MARK: Immutable Mapping
@@ -81,7 +83,7 @@ public final class Map {
 	
 	/// Returns current JSON value of type `T` if it is existing, or returns a
 	/// unusable proxy value for `T` and collects failed count.
-	public func valueOrFail<T>() -> T {
+	public mutating func valueOrFail<T>() -> T {
 		if let value: T = value() {
 			return value
 		} else {

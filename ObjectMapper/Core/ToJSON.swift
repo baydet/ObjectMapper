@@ -28,7 +28,7 @@
 
 import class Foundation.NSNumber
 
-private func setValue(value: AnyObject, map: Map) {
+private func setValue(value: AnyObject, var map: Map) {
 	setValue(value, key: map.currentKey!, checkForNestedKeys: map.keyIsNested, dictionary: &map.JSONDictionary)
 }
 

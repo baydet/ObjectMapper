@@ -824,12 +824,15 @@ struct Immutable: Equatable {
 
 extension Immutable: Mappable {
 	init?(_ map: Map) {
-		prop1 = map["prop1"].valueOrFail()
-		prop2 = map["prop2"].valueOrFail()
-		prop3 = map["prop3"].valueOrFail()
+		var map1 = map["prop1"]
+		var map2 = map["prop2"]
+		var map3 = map["prop3"]
+		prop1 = map1.valueOrFail()
+		prop2 = map2.valueOrFail()
+		prop3 = map3.valueOrFail()
 		prop4 = map["prop4"].valueOr(DBL_MAX)
 		
-		if !map.isValid {
+		if !map1.isValid || !map2.isValid || !map3.isValid {
 			return nil
 		}
 	}
