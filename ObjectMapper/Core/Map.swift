@@ -29,18 +29,6 @@
 
 import Foundation
 
-public protocol nMap {
-	subscript(key: String) -> Self { get }
-	
-	func <- <T>(inout left: T, right: Self)
-	func <- <T>(inout left: T?, right: Self)
-	func <- <T>(inout left: T!, right: Self)
-}
-
-public protocol mutableMap: nMap {
-	subscript(key: String) -> Map { get set }
-}
-
 /// A class used for holding mapping data
 public final class Map {
 	public let mappingType: MappingType
